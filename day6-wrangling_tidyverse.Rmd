@@ -1,0 +1,78 @@
+---
+title: "Data wrangling in tidyr"
+author: "Alex Reed"
+date: "2022-08-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE)
+
+library(tidyverse)
+library(janitor)
+library(here)
+```
+
+### Read in WB data files
+
+```{r}
+wb_indicators <- read_csv(here::here("data", "wb_indicators.csv"), na = c("..", ""))
+wb_metadata <- read.csv(here::here("data", "wb_indicators_metadata.csv"))
+
+# convert to na's (missing values)
+
+```
+
+## Tidy up my data
+
+### pivot_longer to get years into a single column
+
+```{r}
+wb_indicators_long <- wb_indicators |>
+  pivot_longer(cols = '2001 [YR2001]': '2020 [YR2020]',
+              names_to = "years", 
+              values_to = "indicator_value"
+               )
+
+# don't need to include cols = 
+```
+
+### separate
+
+```{r}
+
+wb_clean <- wb_indicators_long |>
+  separate(col = years, into = c("year", "year_chr"),
+           sep = " ") |> 
+  select(-year_chr, -`Country Code`, -`Series Code` ) |>
+  mutate(year = as.numeric(year)) |>
+  drop_na("Series Name") |>
+  pivot_wider(names_from = "Series Name",
+              values_from = "indicator_value")
+
+#rename columns
+
+names(wb_clean) <- c("country", "year", "acces_clean_fuels_pp", "access_electricity_pp", "co2_emissions_kt", "fossil_fuel_cons_pct", "water_stress")
+
+wb_subset <- wb_clean |>
+  filter(country %in% c("Algeria", "Barbados", "Bulgaria", "Chile"))
+
+ggplot(data = wb_subset, aes(x = year, y = co2_emissions_kt)) +
+  geom_line(aes(color = country)) +
+  facet_wrap(~country)
+
+# sep = " ": what is the delimiter I want to separate these on? Separate on a single
+# select: remove these columns space " "
+# mutate: converts year column character to numeric 
+# unique(wb_clean$"Series Name")
+# pivot_wider: spread out the variables in the Series Name column and populate with values from indicator_valyue column
+# names: rename the columns 
+# filter: for countries you want
+# create a line plot. x and y needs to match spelling in data. Could also include group = country after y = 
+  
+```
+
+
+
+
