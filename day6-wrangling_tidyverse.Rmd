@@ -174,8 +174,54 @@ ex_19 <- wb_clean |>
 # Select only columns for country, year, and water stress, and reorder them as year, country, water stress, then filter to only include observations for any three countries of your choice
 ```
 
+### `rename`
 
+```{r}
+# new name = old name 
 
+ex_20 <- wb_clean |>
+  rename(ffcp = fossil_fuel_cons_pct,
+         ws = water_stress)
+
+ex_21 <- wb_clean |>
+  rename(co2 = co2_emissions_kt,
+         acf = access_electricity_pp)
+```
+
+### `mutate`: update an exisiting column, or add a new one
+
+If you assign a NEW column name, it will add a new column to the end of your data frame. if you assign an existing column name, it will overwrite that column.
+
+```{r}
+# add a new column. 
+# Convert from kilo tons to tons. new = old * 1000
+
+ex_22 <- wb_clean |>
+  mutate(co2_emissions_t = co2_emissions_kt * 1000) |>
+  relocate(co2_emissions_t, .after = co2_emissions_kt)
+
+ex_23 <- wb_clean |>
+  mutate(yay = "YAY")
+
+ex_24 <- wb_clean |>
+  mutate(year = as.character(year))
+
+ex_25 <- wb_clean |>
+  mutate(year = as.numeric(year))
+
+## dplyr::relocate()
+ex_26 <- wb_clean |>
+  relocate(water_stress, .after = year)
+```
+
+### `group_by |> summarize`
+
+group_by: Creates groups under the hood based on variables you specify 
+summarize: Apply your functions to EACH GROUP, and return them in a summary table
+
+```{r}
+
+```
 
 
 
