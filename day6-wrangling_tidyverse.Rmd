@@ -73,6 +73,112 @@ ggplot(data = wb_subset, aes(x = year, y = co2_emissions_kt)) +
   
 ```
 
+### filtering rows
+
+Examples: Filter to only keep exact matches
+
+```{r}
+ex_1 <- starwars |>
+  filter(height > 180)
+
+ex_2 <- starwars |>
+  filter(eye_color == "blue")
+
+ex_3 <- starwars |>
+  filter(homeworld == "Naboo")
+```
+
+Examples: Filtering to satisfy multiple conditions
+
+```{r}
+ex_4 <- starwars |>
+  filter(height > 180 & homeworld == "Tatooine")
+
+ex_5 <- starwars |>
+  filter(hair_color == "brown" & species == "Human")
+```
+
+### Filtering OR statements
+
+```{r}
+ex_6 <- starwars |>
+  filter(height > 180 | eye_color == "yellow")
+
+ex_7 <- starwars |>
+  filter(homeworld == "Endor" | species == "Droid")
+
+ex_8 <- starwars |>
+  filter(eye_color  == "blue" | eye_color == "brown" | eye_color == "red")
+
+#same as #8 but more efficient
+ex_9 <- starwars |>
+  filter(eye_color %in% c("blue", "brown", "red"))
+
+# NEVER DO THIS!!
+ex_10 <- starwars |>
+  filter(eye_color == c("blue", "brown", "red"))
+
+ex_11 <- starwars |>
+  filter(homeworld %in% c("Endor", "Tatooine", "Naboo"),
+         height < 150)
+
+# can do , or &
+```
+
+Examples with the negate!
+
+```{r}
+# not equal to human
+ex_12 <- starwars |>
+  filter(species != "Human")
+
+ex_13 <- starwars |>
+  filter(!species %in% c("Human", "Ewok", "Wookiee"))
+```
+
+## `select()`: select or exclude columns 
+
+```{r}
+# Select by name
+ex_14 <- wb_clean |>
+  select(country, year, co2_emissions_kt)
+
+# Select by column name range
+ex_15 <- wb_clean |>
+  select(year:fossil_fuel_cons_pct)
+
+# this range and exclude this one column
+ex_16 <- wb_clean |>
+  select(year:fossil_fuel_cons_pct, -access_electricity_pp)
+```
+
+# pipe sequence 
+```{r}
+ex_17 <- wb_clean |>
+  filter(country %in% c("Bolivia", "Chile", "Mexico")) |>
+  select(country:fossil_fuel_cons_pct)
+
+```
+
+```{r}
+# renaming column 
+ex_18 <- wb_clean |>
+  select(year_new = year, 
+         emissions = co2_emissions_kt,
+         country_name = country)
+
+ex_19 <- wb_clean |>
+  select(year, country, water_stress) |>
+  filter(country %in% c("Honduras", "Ukraine", "Poland"))
+
+# Select only columns for country, year, and water stress, and reorder them as year, country, water stress, then filter to only include observations for any three countries of your choice
+```
+
+
+
+
+
+
 
 
 
