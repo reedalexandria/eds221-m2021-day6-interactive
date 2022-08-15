@@ -220,11 +220,60 @@ group_by: Creates groups under the hood based on variables you specify
 summarize: Apply your functions to EACH GROUP, and return them in a summary table
 
 ```{r}
+# Calculate avg height by species
 
+ex_27 <- starwars |>
+  filter(homeworld %in% c("Naboo", "Tatooine")) |>
+  group_by(species, homeworld) |>
+  summarize(mean_height = mean(height, na.rm = TRUE),
+            mean_mass = mean(mass, na.rm = TRUE))
 ```
 
+### `uncount`
 
+```{r}
+# frequency table:
+df <- tribble(
+  ~species, ~length, ~number,
+  "lobsters", 12, 4,
+  "lobsters", 14, 6,
+  "lobsters", 15, 2
+)
 
+# we want to create a case table:
+df_case <- df |>
+  uncount(number)
+```
 
+```{r}
+# count counts observations
+# combination of group_by summarize n()
 
+starwars |>
+  count(homeworld, species)
+
+# same as:
+
+starwars |>
+  group_by(homeworld, species) |>
+  summarize(size = n(),
+            mean_height = mean(height, na.rm = TRUE))
+```
+
+Practice example:
+- Start from wb_clean
+- Only keep obs. for Nicaragua, Ecuador, Peru, and Chile, AND for years greater than 2005
+- Only keep columns for country, year, and CO2 emissions
+- Add a new column that is CO2 emissions converted to megatons
+- find the total CO2 emissions in megatons for the years still in the dataset by country
+
+```{r}
+ex_28 <- wb_clean |>
+  filter(country %in% c("Nicaragua", "Ecuador", "Peru", "Chile") & year > 2005) |>
+  select(country, year, co2_emissions_kt) |>
+  mutate(co2_emissions_mt = co2_emissions_kt / 1000) |>
+  group_by(country) |>
+  summarize(total_co2_mt = sum(co2_emissions_mt, na.rm = TRUE))
+  
+```
 
